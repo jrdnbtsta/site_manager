@@ -11,6 +11,16 @@ from rsvp.models import Guest, Party
 
 # Create your views here.
 
+def wake_up(self):
+    content = {
+        "status": "success",
+        "message": "server is now awake"
+    }
+    status = http.client.OK
+
+    return HttpResponse(content=json.dumps(content), status=status, content_type='application/json')
+
+
 class PartyAPI(View):
 
     def get(self, request):

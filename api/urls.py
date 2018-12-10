@@ -19,6 +19,7 @@ from django.conf.urls import include, url
 from . import views
 
 urlpatterns = [
+    url(r'^wake-up-call/', views.wake_up, name='wake-up'),
     url(r'^party/', views.PartyAPI.as_view(), name='party'),
     url(r'^guest/', views.GuestAPI.as_view(), name='party'),
 ]
