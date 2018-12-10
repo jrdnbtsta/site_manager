@@ -1,4 +1,5 @@
-"""site_manager URL Configuration
+"""
+api URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/2.0/topics/http/urls/
@@ -15,8 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.conf.urls import include, url
+from . import views
 
 urlpatterns = [
-    url('admin/', admin.site.urls),
-    url(r'^api/', include('api.urls')),
+    url(r'^party/', views.PartyAPI.as_view(), name='party'),
+    url(r'^guest/', views.GuestAPI.as_view(), name='party'),
 ]
