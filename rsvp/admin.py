@@ -9,7 +9,9 @@ class GuestAdmin(admin.ModelAdmin):
     def get_party(self, obj):
         party = Party.objects.filter(guest=obj).first()
         string = "\n"
-        return "{} - {}".format(party.id, party.name)
+        if party:
+            return "{} - {}".format(party.id, party.name)
+        return "N/A"
 
 class PartyAdmin(admin.ModelAdmin):
     model = Party

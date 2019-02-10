@@ -58,22 +58,21 @@ class PartyAPI(View):
         }
         """
 
-        first_name = request.GET.get('first_name', '').lower()
-        last_name = request.GET.get('last_name', '').lower()
-        email = request.GET.get('email', '').lower()
+        first_name = request.GET.get('first_name', '')
+        last_name = request.GET.get('last_name', '')
+        email = request.GET.get('email', '')
         init_guest = None
 
         try:
             if email:
-                init_guest = Guest.objects.filter(email=email).first()
-            
+                init_guest = Guest.objects.filter(email__iexact=email).first()
             elif first_name and last_name:
-                init_guest = Guest.objects.filter(first_name=first_name, last_name=last_name).first()
+                init_guest = Guest.objects.filter(first_name__iexact=first_name, last_name__iexact=last_name).first()
             if not init_guest:
             
                 # send error / tell user to reach out
                 content = {
-                    "message": "unable to find guest",
+                    "message": "no-guest-found",
                     "status": "error",
                     "party": [],
                     "guest_id": None
@@ -81,27 +80,38 @@ class PartyAPI(View):
                 status = http.client.BAD_REQUEST
                 return HttpResponse(content=json.dumps(content), status=status, content_type='application/json')
 
-            party = []
-            p = Party.objects.filter(guest=init_guest).first()
-            for guest in p.guest.all():
-                party.append({
-                    "guest_id": guest.id,
-                    "first_name": guest.first_name,
-                    "last_name": guest.last_name,
-                    "email": guest.email,
-                    "address": guest.address,
-                    "attending_wedding": guest.attending_wedding,
-                    "attending_welcome_dinner": guest.attending_welcome_dinner
-                })
+            try:
+                party = []
+                p = Party.objects.filter(guest=init_guest).first()
+                for guest in p.guest.all():
+                    party.append({
+                        "guest_id": guest.id,
+                        "first_name": guest.first_name,
+                        "last_name": guest.last_name,
+                        "email": guest.email,
+                        "address": guest.address,
+                        "attending_wedding": guest.attending_wedding,
+                        "attending_welcome_dinner": guest.attending_welcome_dinner
+                    })
 
-            content = {
-                "guest_id": init_guest.id,
-                "party": party,
-                "party_count": len(party),
-                "status": "success",
-                "message": "received party"
-            }
-            status= http.client.OK
+                content = {
+                    "guest_id": init_guest.id,
+                    "party": party,
+                    "party_count": len(party),
+                    "status": "success",
+                    "message": "received party"
+                }
+                status= http.client.OK
+
+            except AttributeError:
+                content = {
+                    "guest_id": init_guest.id,
+                    "party": party,
+                    "party_count": 1,
+                    "status": "success",
+                    "message": "No Party Associated with guest"
+                }
+                status = http.client.ok
 
         except Exception as e:
             content = {
