@@ -83,29 +83,25 @@ class PartyAPI(View):
             try:
                 party = []
                 p = Party.objects.filter(guest=init_guest).first()
+                party.append(init_guest.get_info())
+
                 for guest in p.guest.all():
-                    party.append({
-                        "guest_id": guest.id,
-                        "first_name": guest.first_name,
-                        "last_name": guest.last_name,
-                        "email": guest.email,
-                        "address": guest.address,
-                        "attending_wedding": guest.attending_wedding,
-                        "attending_welcome_dinner": guest.attending_welcome_dinner
-                    })
+                    if guest.id != init_guest.id:
+                        party.append(guest.get_info())
 
                 content = {
-                    "guest_id": init_guest.id,
+                    "intial_guest_id": init_guest.id,
                     "party": party,
                     "party_count": len(party),
                     "status": "success",
                     "message": "received party"
                 }
+
                 status= http.client.OK
 
             except AttributeError:
                 content = {
-                    "guest_id": init_guest.id,
+                    "initial_guest_id": init_guest.id,
                     "party": party,
                     "party_count": 1,
                     "status": "success",

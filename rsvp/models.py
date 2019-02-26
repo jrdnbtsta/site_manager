@@ -13,6 +13,18 @@ class Guest(models.Model):
 
     def __str__(self):
         return self.first_name + " " + self.last_name
+    
+    def get_info(self):
+        return {
+            "guest_id": self.id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "email": self.email,
+            "address": self.address,
+            "attending_wedding": self.attending_wedding,
+            "attending_welcome_dinner": self.attending_welcome_dinner
+        }
+
 
 class Party(models.Model):
     name = models.CharField(max_length=64, blank=True)
